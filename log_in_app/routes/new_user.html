@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create New User</title>
+    <meta name="description" content="Creates new user.">
+    <meta name="author" content="Matthew Burrell">
+  </head>
+  <body>
+    <header>
+        <nav>
+            <a href="home">Home</a>
+            <a href="createUser">Create New User!</a>
+            <a href="log_in">Log In</a>
+        </nav>
+    </header>
+    <form id="eventForm">
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" required>
+        <br>
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" required>
+        <br>
+        <label for="emp_email">Email:</label>
+        <input type="email" id="emp_email" name="emp_email" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="messageDiv">
+
+    </div>
+
+    <script>
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent the default form submission
+            const messageContainer = document.getElementById('messageDiv');
+            messageContainer.textContent = '';
+            
+            const f_name = document.getElementById('first_name').value;
+            const l_name = document.getElementById('last_name').value;
+            const emp_email = document.getElementById('emp_email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/createNewUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ f_name, l_name, emp_email, password }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    messageContainer.textContent = 'Account created successfully!';
+                    messageContainer.style.color = 'green';
+                    // alert('User added successfully!');
+                    document.getElementById('eventForm').reset();
+                }
+                else {
+                    return response.json().then(errorData => {
+                        messageContainer.textContent = `${errorData.message}`;
+                        messageContainer.style.color = 'red';
+
+                        // alert(`Error creating user: ${errorData.message}`); // backticks, not single quotes...
+                });
+                }
+            });
+        });
+    </script>
+
+  </body>
+</html>
